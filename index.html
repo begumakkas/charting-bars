@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- <link href="style.css" rel="stylesheet" /> havent added css yet -->
+    <script src="src/d3.v7.js"></script>
+    <script type="module" src="src/main.js"></script>
+  </head>
+  <body>
+
+    <section>
+        <h2>Billboard's Top 100 Songs</h2>
+        <h3>Brief explanation of project</h3>
+
+    </section>
+
+    <!-- Guess percentage before revealing viz -->
+    <div id="guess-section">
+        <h4>What percent of total songs since 1958 included at least one female songwriter?</h4>
+        <input type="number"  id="guess-input" placeholder="Enter a number"/>
+        <button id="guess-submit">Submit</button>
+
+        <div id="guess-result"></div>
+    </div>
+
+    <br>
+    <!-- Create drop downs -->
+    <div class="dropdown-set">
+        <h4>Select Role</h4>
+        <button data-role="all">All</button>
+        <button data-role="artist">Artist</button>
+        <button data-role="songwriter">Songwriter</button>
+    </div>
+
+    <div class="dropdown-set">
+        <h4>Select Grouping</h4>
+        <button data-role="race">Race</button>
+        <button data-role="gender">Gender</button>
+    </div>
+
+    <!-- Render SVG -->
+    <section class="chart-section">
+        <div id="circles"></div>
+    </section>
+
+  </body>
+</html>
