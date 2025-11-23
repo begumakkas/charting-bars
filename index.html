@@ -2,46 +2,59 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <!-- <link href="style.css" rel="stylesheet" /> havent added css yet -->
+    <link href="src/style.css" rel="stylesheet" /> 
     <script src="src/d3.v7.js"></script>
     <script type="module" src="src/main.js"></script>
   </head>
   <body>
 
-    <section>
+    <section class="header-section">
         <h2>Billboard's Top 100 Songs</h2>
-        <h3>Brief explanation of project</h3>
-
+        <h4>This project explores data of every song that ever hit the Billboard 
+            Hot 100 list between August 4, 1958 and January 11, 2025.</h4>
     </section>
 
     <!-- Guess percentage before revealing viz -->
     <div id="guess-section">
-        <h4>What percent of total songs since 1958 included at least one female songwriter?</h4>
+        <p>What percent of total songs included at least one female songwriter?</p>
         <input type="number"  id="guess-input" placeholder="Enter a number"/>
         <button id="guess-submit">Submit</button>
 
         <div id="guess-result"></div>
     </div>
 
+    <div id="gender-answer">
+        <p>The correct answer is 27%.</p>
+        <p>You can explore the songwriter gender divide below, along with other
+            demoraphic trends. Each dot represents a song.
+        </p>
+    </div>
+
     <br>
-    <!-- Create drop downs -->
-    <div class="dropdown-set">
-        <h4>Select Role</h4>
-        <button data-role="all">All</button>
-        <button data-role="artist">Artist</button>
-        <button data-role="songwriter">Songwriter</button>
+
+    <div id="viz-container">
+        <!-- Create drop downs -->
+        <div class="dropdown-set">
+            <h4>Select Role</h4>
+            <select id="role-select">
+                <option role="songwriter">Songwriter(s)</option>
+                <option role="artist">Artist(s)</option>
+            </select>
+        </div>
+
+        <div class="button-set">
+            <h4>Select Grouping</h4>
+            <button data-group="race">Race</button>
+            <button data-group="gender">Gender</button>
+            <button data-group="none">None</button>
+        </div>
+
+        <!-- Render SVG & Legend -->
+        <section class="chart-section">
+            <div id="legend"></div>
+            <div id="circles"></div>
+        </section>
     </div>
-
-    <div class="dropdown-set">
-        <h4>Select Grouping</h4>
-        <button data-role="race">Race</button>
-        <button data-role="gender">Gender</button>
-    </div>
-
-    <!-- Render SVG -->
-    <section class="chart-section">
-        <div id="circles"></div>
-    </section>
-
   </body>
+
 </html>

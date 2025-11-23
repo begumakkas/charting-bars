@@ -1,0 +1,61 @@
+.header-section {
+    text-align: center;
+}
+
+#guess-section {
+    text-align: center;
+}
+
+#gender-answer {
+    opacity: 0;
+    transition: opacity 3s ease;
+    text-align: center;
+}
+
+#gender-answer.visible {
+  opacity: 1;
+  text-align: center;
+}
+
+#viz-container {
+  opacity: 0;
+  transition: opacity 4s ease;
+}
+
+#viz-container.visible {
+  opacity: 1;
+}
+
+#legend {
+  margin: 10px auto 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#legend.fade{
+    opacity: 0;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
