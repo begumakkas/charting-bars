@@ -20,48 +20,49 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // load & clean data
-// const data = await d3.csv("data/Billboard100_data.csv", d3.autoType);
-
-// work with dummy data for now
-const data = [
-  { artist_gender: "Non-Binary",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-  { artist_gender: "Female", songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "Non-White" },
-  { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "Mixed",     songwriter_race: "Mixed" },
-  { artist_gender: "Female", songwriter_gender: "Female", artist_race: "White",     songwriter_race: "White" },
-  { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-  { artist_gender: "Female", songwriter_gender: "Female", artist_race: "Mixed",     songwriter_race: "Mixed" },
-  { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-  { artist_gender: "Mixed",   songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "White" }
-];
-
-
-// create nodes and define data to use
-// const nodes = data.map((d, i) => ({
-//     id: i,
-//     artistMale: d["Artist Male"],
-//     artistWhite: d["Artist White"],
-//     songwriterMale: d["Songwriter Male"],
-//     songwriterWhite: d["Songwriter White"]
-// }));
-
-// set up margins and dimensions
-const svgWidth = 900,
-    svgHeight = 450,
-    margin = { top: 30, right: 30, bottom: 60, left: 60},
-    width = svgWidth - margin.left - margin.right,
-    height = svgHeight - margin.top - margin.bottom;
+const data = await d3.csv("../data/Billboard100_cleaned.csv", d3.autoType);
 
 // set up force simulation
 const nodes = data.map((d, i) => ({
     id: i,
-    artistGender: d.artist_gender,
-    songwriterGender: d.songwriter_gender,
-    artistRace: d.artist_race,
-    songwriterRace: d.songwriter_race,
+    artistGender: d.Artist_Gender,
+    songwriterGender: d.Songwriter_Gender,
+    artistRace: d.Artist_Race,
+    songwriterRace: d.Songwriter_Race,
     radius: 5
 }));
 console.log(nodes)
 
+// work with dummy data for now
+// const data = [
+//   { artist_gender: "Non-Binary",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
+//   { artist_gender: "Female", songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "Non-White" },
+//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "Mixed",     songwriter_race: "Mixed" },
+//   { artist_gender: "Female", songwriter_gender: "Female", artist_race: "White",     songwriter_race: "White" },
+//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
+//   { artist_gender: "Female", songwriter_gender: "Female", artist_race: "Mixed",     songwriter_race: "Mixed" },
+//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
+//   { artist_gender: "Mixed",   songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "White" }
+// ];
+
+
+// set up force simulation
+// const nodes = data.map((d, i) => ({
+//     id: i,
+//     artistGender: d.artist_gender,
+//     songwriterGender: d.songwriter_gender,
+//     artistRace: d.artist_race,
+//     songwriterRace: d.songwriter_race,
+//     radius: 5
+// }));
+// console.log(nodes)
+
+// set up margins and dimensions
+const svgWidth = 900,
+    svgHeight = 900,
+    margin = { top: 50, right: 50, bottom: 50, left: 50},
+    width = svgWidth - margin.left - margin.right,
+    height = svgHeight - margin.top - margin.bottom;
 
 // define current state variables
 let currentRole = "Songwriter(s)";
@@ -94,7 +95,30 @@ const simulation = d3.forceSimulation(nodes)
     .force("charge", d3.forceManyBody().strength(-5)) // simulate repulsion when strength is negative
     .force("collision", d3.forceCollide().radius(d => d.radius + 1)) // prevents nodes from overlapping
     .force("x", d3.forceX(width / 2).strength(0.02))
-    .force("y", d3.forceY(height / 2).strength(0.02));
+    .force("y", d3.forceY(height / 2).strength(0.02))
+
+// create function to run simulation multiple times with specified cool down time
+// context: the circles do not separate enough with one run of the simulation,
+// regardless of the parameters used to run the simulation. Therefore, what we
+// really need is the simulation to cool down before running it multiple times to
+// ensure the circles are fully separated by their categories. 
+
+function oneReheat(reheatCount, N, cool_time) {
+    if (reheatCount >= N) return;
+
+    simulation.alpha(1).restart();
+
+    const nextCount = reheatCount + 1;
+
+    if (nextCount < N) {
+        setTimeout(() => oneReheat(nextCount, N, cool_time), cool_time);
+    }
+}
+
+function reheatManyTimes(N, cool_time) {
+    oneReheat(0, N, cool_time); // start with reheatCount = 0
+
+}
 
 
 // default circle setting ("none")
@@ -117,7 +141,7 @@ const xCenterRace = d3.scalePoint()
     .padding(0.5);
 
 const xCenterGender = d3.scalePoint()
-    .domain(["Male","Female","Mixed","Non-Binary"])
+    .domain(["All Male","All Female","Female-Male Mixed","At Least One Non-Binary"])
     .range([svgWidth * 0.1, svgWidth * 0.9])
     .padding(0.5);
 
@@ -126,16 +150,18 @@ const raceColor = d3.scaleOrdinal()
     .range(["red","blue","green"]);
 
 const genderColor = d3.scaleOrdinal()
-    .domain(["Male","Female","Mixed","Non-Binary"])
+    .domain(["All Male","All Female","Female-Male Mixed","At Least One Non-Binary"])
     .range(["red","blue","green", "brown"]);
 
 
 // function that updates simulation based on groups
 function clusterByCategory(fieldName, xScale, colorScale) {
     simulation
-        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.02))
-        .alpha(1) // restart simulation with full energy
-        .restart();
+        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.2))
+        // .alpha(1) // restart simulation with full energy
+        // .restart();
+
+    reheatManyTimes(10, 500) // simulate 5 button clicks, 300ms apart
 
     // update circle colors 
     circles
