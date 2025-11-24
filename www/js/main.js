@@ -58,8 +58,8 @@ console.log(nodes)
 // console.log(nodes)
 
 // set up margins and dimensions
-const svgWidth = 900,
-    svgHeight = 900,
+const svgWidth = 1200,
+    svgHeight = 600,
     margin = { top: 50, right: 50, bottom: 50, left: 50},
     width = svgWidth - margin.left - margin.right,
     height = svgHeight - margin.top - margin.bottom;
@@ -157,11 +157,9 @@ const genderColor = d3.scaleOrdinal()
 // function that updates simulation based on groups
 function clusterByCategory(fieldName, xScale, colorScale) {
     simulation
-        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.2))
-        // .alpha(1) // restart simulation with full energy
-        // .restart();
+        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.03))
 
-    reheatManyTimes(10, 500) // simulate 5 button clicks, 300ms apart
+    reheatManyTimes(10, 300) // simulate N button clicks, 300ms apart
 
     // update circle colors 
     circles
@@ -281,20 +279,32 @@ let CircleSvg = d3.select("#circles")
     .attr("height", svgHeight)
     .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
 
+const g = CircleSvg.append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // attach circles
-let circles = CircleSvg
+let circles = g
     .selectAll("circle")
     .data(nodes)
     .join("circle")
     .attr("r", 5)
     .attr("fill", "grey");
 
+
 simulation.on("tick", () => {
-  circles
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y);
+    circles
+        .attr("cx", d => {
+        // clamp x between nodeRadius and width - nodeRadius
+        d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
+        return d.x;
+        })
+        .attr("cy", d => {
+        // clamp y between nodeRadius and height - nodeRadius
+        d.y = Math.max(d.radius, Math.min(height - d.radius, d.y));
+        return d.y;
+        });
 });
+
 
 // display legend on initial load of page
 renderLegend();
