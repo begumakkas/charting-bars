@@ -25,6 +25,7 @@ const data = await d3.csv("../data/Billboard100_cleaned.csv", d3.autoType);
 // set up force simulation
 const nodes = data.map((d, i) => ({
     id: i,
+    row: d, // store entire row from csv
     artistGender: d.Artist_Gender,
     songwriterGender: d.Songwriter_Gender,
     artistRace: d.Artist_Race,
@@ -305,6 +306,23 @@ simulation.on("tick", () => {
         });
 });
 
+// add tooltip on hover
+const tooltip = d3.select("#tooltip")
+
+circles.on("mouseover", (event, d) => 
+    {
+    tooltip.style("visibility", "visible")
+        .text("Song Title: " + d.row.Song + "\n"
+            + "Artist: " + d.row.Artist
+        ) 
+    })
+    .on("mousemove", (event, d) =>  {
+        // Position the tooltip near the cursor
+        tooltip.style("top", (event.pageY - 10) + "px")
+               .style("left", (event.pageX + 10) + "px")})
+    .on("mouseout", (event, d) =>  {
+        tooltip.style("visibility", "hidden"); 
+    })
 
 // display legend on initial load of page
 renderLegend();
