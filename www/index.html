@@ -25,28 +25,38 @@
 
     <div id="gender-answer">
         <p>The correct answer is 27%.</p>
+        <br>
         <p>You can explore the songwriter gender divide below, along with other
-            demoraphic trends. Each dot represents a song.
+            demographic trends. Each dot represents a song.
         </p>
     </div>
 
     <br>
 
     <div id="viz-container">
-        <!-- Create drop downs -->
-        <div class="dropdown-set">
-            <h4>Select Role</h4>
-            <select id="role-select">
-                <option role="songwriter">Songwriter(s)</option>
-                <option role="artist">Artist(s)</option>
-            </select>
-        </div>
+        <!-- Create drop downs/buttons -->
+        <div class="filtering-row">
 
-        <div class="button-set">
-            <h4>Select Grouping</h4>
-            <button data-group="race">Race</button>
-            <button data-group="gender">Gender</button>
-            <button data-group="none">None</button>
+            <div class="filter-card role-group">
+                <h4>Select Role and</h4>
+                <select id="role-select">
+                    <option role="songwriter">Songwriter(s)</option>
+                    <option role="artist">Artist(s)</option>
+                </select>
+            </div>
+
+            <div class="filter-card role-group">
+                <h4>Group</h4>
+                <button data-group="race">Race</button>
+                <button data-group="gender">Gender</button>
+            </div>
+
+            <div class="filter-card other-views">
+                <h4>Other Views</h4>
+                <button data-group="none">None</button>
+                <button data-group="happiness">Happiness</button>
+            </div>
+
         </div>
 
         <!-- Render SVG & Legend -->
@@ -56,6 +66,7 @@
         </section>
 
         <div id="tooltip"></div>
+        
     </div>
   </body>
 

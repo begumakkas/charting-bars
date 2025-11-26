@@ -30,33 +30,11 @@ const nodes = data.map((d, i) => ({
     songwriterGender: d.Songwriter_Gender,
     artistRace: d.Artist_Race,
     songwriterRace: d.Songwriter_Race,
+    happiness: d.Happiness,
     radius: 5
 }));
 console.log(nodes)
 
-// work with dummy data for now
-// const data = [
-//   { artist_gender: "Non-Binary",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-//   { artist_gender: "Female", songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "Non-White" },
-//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "Mixed",     songwriter_race: "Mixed" },
-//   { artist_gender: "Female", songwriter_gender: "Female", artist_race: "White",     songwriter_race: "White" },
-//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-//   { artist_gender: "Female", songwriter_gender: "Female", artist_race: "Mixed",     songwriter_race: "Mixed" },
-//   { artist_gender: "Male",   songwriter_gender: "Male",   artist_race: "White",     songwriter_race: "White" },
-//   { artist_gender: "Mixed",   songwriter_gender: "Male",   artist_race: "Non-White", songwriter_race: "White" }
-// ];
-
-
-// set up force simulation
-// const nodes = data.map((d, i) => ({
-//     id: i,
-//     artistGender: d.artist_gender,
-//     songwriterGender: d.songwriter_gender,
-//     artistRace: d.artist_race,
-//     songwriterRace: d.songwriter_race,
-//     radius: 5
-// }));
-// console.log(nodes)
 
 // set up margins and dimensions
 const svgWidth = 1200,
@@ -132,7 +110,7 @@ function defaultCircles() {
 
     // update colors to race-based
     circles
-        .attr("fill", "grey");
+        .attr("fill", "#B0B0B0");
 }
 
 // create x-center and color mappings for group categories
@@ -148,27 +126,60 @@ const xCenterGender = d3.scalePoint()
 
 const raceColor = d3.scaleOrdinal()
     .domain(['White', 'Non-White', 'Mixed'])
-    .range(["red","blue","green"]);
+    .range(["#e8c8c8ff","#00B8A9","#9B5DE5"]);
 
 const genderColor = d3.scaleOrdinal()
     .domain(["All Male","All Female","Female-Male Mixed","At Least One Non-Binary"])
-    .range(["red","blue","green", "brown"]);
+    .range(["#E39D25","#2559A6","#6aa171ff", "#E36B5F"]);
+
+const xHappiness = d3.scaleLinear()
+    .domain([0, 100])
+    .range([0,width]);
 
 
 // function that updates simulation based on groups
 function clusterByCategory(fieldName, xScale, colorScale) {
     simulation
-        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.03))
+        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.05)) 
+        .force("y", d3.forceY(height / 2).strength(0.05)); 
 
-    reheatManyTimes(10, 300) // simulate N button clicks, 300ms apart
+    reheatManyTimes(5, 300); // simulate N button clicks, 300ms apart
 
     // update circle colors 
     circles
         .attr("fill", d => colorScale(d[fieldName]));
 }
 
+function clusterByHappiness() {
+    simulation 
+        .force("x", d3.forceX(d => xHappiness(d.happiness)).strength(0.03))
+        .force("y", d3.forceY(height / 2).strength(0.05));
+
+    reheatManyTimes(3, 300); // simulate N button clicks, 300ms apart
+
+    // update circle colors 
+    circles
+        .attr("fill", "#971b5fff");
+}
+
 // legend function
 const legendContainer = document.getElementById("legend");
+
+function createSingleLegend(labelText, color) {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+
+    const swatch = document.createElement("span");
+    swatch.className = "legend-swatch";
+    swatch.style.backgroundColor = color;   
+
+    const label = document.createElement("span");
+    label.textContent = labelText;
+
+    item.appendChild(swatch);
+    item.appendChild(label);
+    legendContainer.appendChild(item);
+}
 
 function renderLegend() {
   // wipe previous legend
@@ -176,20 +187,13 @@ function renderLegend() {
 
   // create legend for "none"
   if (currentGroup === "none") {
+    createSingleLegend("All Songs", "#B0B0B0");
+    
+    return;  
+  }
 
-    const item = document.createElement("div");
-    item.className = "legend-item";
-
-    const swatch = document.createElement("span");
-    swatch.className = "legend-swatch";
-    swatch.style.backgroundColor = "grey";   
-
-    const label = document.createElement("span");
-    label.textContent = "All Songs";
-
-    item.appendChild(swatch);
-    item.appendChild(label);
-    legendContainer.appendChild(item);
+  if (currentGroup === "happiness") {
+    createSingleLegend("All Songs", "#971b5fff");
 
     return;  
   }
@@ -229,11 +233,75 @@ function renderLegend() {
 function updateLegendSmooth() {
     legendContainer.classList.add("fade"); 
 
-  setTimeout(() => {
-    renderLegend();                        
-    legendContainer.classList.remove("fade"); 
-  }, 800); // 0.8 second
+    setTimeout(() => {
+        renderLegend();                        
+        legendContainer.classList.remove("fade"); 
+    }, 800); // 0.8 second
 }
+
+// create svg
+
+// create empty svg
+let CircleSvg = d3.select("#circles")
+    .append("svg")
+    .attr("width", "100%")
+    .attr("height", svgHeight)
+    .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`); 
+
+const g = CircleSvg.append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+// attach circles
+let circles = g
+    .selectAll("circle")
+    .data(nodes)
+    .join("circle")
+    .attr("r", 5)
+    .attr("fill", "#B0B0B0");
+
+// join circles to simulation
+simulation.on("tick", () => {
+    circles
+        .attr("cx", d => {
+        // clamp x between nodeRadius and width - nodeRadius
+        d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
+        return d.x;
+        })
+        .attr("cy", d => {
+        // clamp y between nodeRadius and height - nodeRadius
+        d.y = Math.max(d.radius, Math.min(height - d.radius, d.y));
+        return d.y;
+        });
+});
+
+// create x-axis for other views
+const xAxisHappiness = g.append("g")
+    .attr("class", "happiness-axis")
+    .attr("transform", `translate(0,${height + 20})`)
+    .call(
+        d3.axisBottom(xHappiness)     
+        .tickValues([])
+        .tickSize(0)
+    );
+
+// create manual labels for happiness x-axis
+// left label
+xAxisHappiness.append("text")
+  .attr("class", "happiness-label")
+  .attr("x", xHappiness(0))
+  .attr("y", 25)              // a bit below the axis line
+  .attr("text-anchor", "start")
+  .text("Less Happy");        
+
+// right label
+xAxisHappiness.append("text")
+  .attr("class", "happiness-label")
+  .attr("x", xHappiness(100))
+  .attr("y", 25)
+  .attr("text-anchor", "end")
+  .text("More Happy");        
+
+
 
 // function that moves circles / updates layout
 function updateLayout() {
@@ -268,43 +336,17 @@ function updateLayout() {
         clusterByCategory("songwriterGender", xCenterGender, genderColor);
         updateLegendSmooth();
     }
+
+    // happiness
+    if (currentGroup === "happiness") {
+        clusterByHappiness();
+        updateLegendSmooth(); 
+        xAxisHappiness.classed("visible", true); // display x-axis only for this group
+    } else {
+        xAxisHappiness.classed("visible", false)
+    };
 }
 
-
-// create svg
-
-// create empty svg
-let CircleSvg = d3.select("#circles")
-    .append("svg")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight)
-    .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
-
-const g = CircleSvg.append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-// attach circles
-let circles = g
-    .selectAll("circle")
-    .data(nodes)
-    .join("circle")
-    .attr("r", 5)
-    .attr("fill", "grey");
-
-
-simulation.on("tick", () => {
-    circles
-        .attr("cx", d => {
-        // clamp x between nodeRadius and width - nodeRadius
-        d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
-        return d.x;
-        })
-        .attr("cy", d => {
-        // clamp y between nodeRadius and height - nodeRadius
-        d.y = Math.max(d.radius, Math.min(height - d.radius, d.y));
-        return d.y;
-        });
-});
 
 // add tooltip on hover
 const tooltip = d3.select("#tooltip")
@@ -316,11 +358,11 @@ circles.on("mouseover", (event, d) =>
             + "Artist: " + d.row.Artist
         ) 
     })
-    .on("mousemove", (event, d) =>  {
+    .on("mousemove", (event) =>  {
         // Position the tooltip near the cursor
         tooltip.style("top", (event.pageY - 10) + "px")
                .style("left", (event.pageX + 10) + "px")})
-    .on("mouseout", (event, d) =>  {
+    .on("mouseout", () =>  {
         tooltip.style("visibility", "hidden"); 
     })
 
