@@ -5,7 +5,9 @@
     <link href="style.css" rel="stylesheet" /> 
     <script src="js/d3.v7.js"></script>
     <script type="module" src="js/main.js"></script>
-  </head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap">
+    <link href="https://api.fontshare.com/v2/css?f[]=ranade@400,500,700&display=swap" rel="stylesheet">
+</head>
   <body>
 
     <section class="header-section">
@@ -17,18 +19,20 @@
     <!-- Guess percentage before revealing viz -->
     <div id="guess-section">
         <p>What percent of total songs included at least one female songwriter?</p>
+        <br>
         <input type="number"  id="guess-input" placeholder="Enter a number"/>
         <button id="guess-submit">Submit</button>
 
         <div id="guess-result"></div>
-    </div>
+    
+        <div id="gender-answer">
+            <p>The correct answer is 27%.</p>
+            <br>
+            <p>You can explore the songwriter gender divide below, along with other
+                trends. Each dot represents a song.
+            </p>
+        </div>
 
-    <div id="gender-answer">
-        <p>The correct answer is 27%.</p>
-        <br>
-        <p>You can explore the songwriter gender divide below, along with other
-            demographic trends. Each dot represents a song.
-        </p>
     </div>
 
     <br>

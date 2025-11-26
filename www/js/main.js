@@ -256,6 +256,7 @@ let circles = g
     .selectAll("circle")
     .data(nodes)
     .join("circle")
+    .attr("class", "song-dot")
     .attr("r", 5)
     .attr("fill", "#B0B0B0");
 
@@ -352,12 +353,12 @@ function updateLayout() {
 const tooltip = d3.select("#tooltip")
 
 circles.on("mouseover", (event, d) => 
-    {
-    tooltip.style("visibility", "visible")
-        .text("Song Title: " + d.row.Song + "\n"
-            + "Artist: " + d.row.Artist
-        ) 
-    })
+        {
+        tooltip.style("visibility", "visible")
+            .text("Song Title: " + d.row.Song + "\n"
+                + "Artist: " + d.row.Artist
+            );
+        })
     .on("mousemove", (event) =>  {
         // Position the tooltip near the cursor
         tooltip.style("top", (event.pageY - 10) + "px")
