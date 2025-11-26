@@ -77,6 +77,7 @@ const simulation = d3.forceSimulation(nodes)
     .force("collision", d3.forceCollide().radius(d => d.radius + 1)) // prevents nodes from overlapping
     .force("x", d3.forceX(width / 2).strength(0.02))
     .force("y", d3.forceY(height / 2).strength(0.02))
+    
 
 // create function to run simulation multiple times with specified cool down time
 // context: the circles do not separate enough with one run of the simulation,
