@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
     result.textContent = `You guessed: ${num}%`;
 
     // reveal answer
+    // AI: learned how to add a class this way to toggle visibility
     document.getElementById("gender-answer").classList.add("visible"); // adds class "visible" after submit is clicked
     // reveal viz w/ delay
     setTimeout(() => {
@@ -57,6 +58,7 @@ roleSelect.addEventListener("change", e => {
 })
 
 // buttons
+// AI: asked how to select all buttons in document
 const buttons = document.querySelectorAll('button[data-group]');
 
 buttons.forEach(btn => {
@@ -114,6 +116,7 @@ function defaultCircles() {
 }
 
 // create x-center and color mappings for group categories
+// AI: asked how to non-manually map categories to a scale and learned about scalePoint()
 const xCenterRace = d3.scalePoint()
     .domain(["White","Mixed","Non-White"])
     .range([svgWidth * 0.1, svgWidth * 0.9])
@@ -139,6 +142,7 @@ const xHappiness = d3.scaleLinear()
 
 // function that updates simulation based on groups
 function clusterByCategory(fieldName, xScale, colorScale) {
+    // AI: asked how to access data element to learn "d[fieldName]" syntax
     simulation
         .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.05)) 
         .force("y", d3.forceY(height / 2).strength(0.05)); 
@@ -163,6 +167,7 @@ function clusterByHappiness() {
 }
 
 // legend function
+// AI: asked how to create dynamic DOM elements
 const legendContainer = document.getElementById("legend");
 
 function createSingleLegend(labelText, color) {
@@ -183,6 +188,7 @@ function createSingleLegend(labelText, color) {
 
 function renderLegend() {
   // wipe previous legend
+  // AI: asked how to reset legend element
   legendContainer.innerHTML = "";
 
   // create legend for "none"
@@ -263,6 +269,8 @@ let circles = g
 // join circles to simulation
 simulation.on("tick", () => {
     circles
+        // AI: my circles were being pushed off the page, so I asked AI how to 
+        // ensure the circles stay within the SVG and it gave this clamping formula
         .attr("cx", d => {
         // clamp x between nodeRadius and width - nodeRadius
         d.x = Math.max(d.radius, Math.min(width - d.radius, d.x));
@@ -290,7 +298,7 @@ const xAxisHappiness = g.append("g")
 xAxisHappiness.append("text")
   .attr("class", "happiness-label")
   .attr("x", xHappiness(0))
-  .attr("y", 25)              // a bit below the axis line
+  .attr("y", 25)              
   .attr("text-anchor", "start")
   .text("Less Happy");        
 
@@ -355,6 +363,7 @@ const tooltip = d3.select("#tooltip")
 circles.on("mouseover", (event, d) => 
         {
         tooltip.style("visibility", "visible")
+            // AI: asked how to include multiple lines of text on tooltip
             .text("Song Title: " + d.row.Song + "\n"
                 + "Artist: " + d.row.Artist
             );
