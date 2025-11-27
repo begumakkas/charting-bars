@@ -75,9 +75,9 @@ buttons.forEach(btn => {
 const simulation = d3.forceSimulation(nodes)
     .force("charge", d3.forceManyBody().strength(-5)) // simulate repulsion when strength is negative
     .force("collision", d3.forceCollide().radius(d => d.radius + 1)) // prevents nodes from overlapping
-    .force("x", d3.forceX(width / 2).strength(0.02))
-    .force("y", d3.forceY(height / 2).strength(0.02))
-    
+    .force("x", d3.forceX(width / 2).strength(0.07))
+    .force("y", d3.forceY(height / 2).strength(0.1))
+
 
 // create function to run simulation multiple times with specified cool down time
 // context: the circles do not separate enough with one run of the simulation,
@@ -106,9 +106,9 @@ function reheatManyTimes(N, cool_time) {
 // default circle setting ("none")
 function defaultCircles() {
     simulation
-        .force("x", d3.forceX(width / 2).strength(0.02))
-        .force("y", d3.forceY(height / 2).strength(0.02))
-        .alpha(1) // restart simulation with full energy
+        .force("x", d3.forceX(width / 2).strength(0.07))
+        .force("y", d3.forceY(height / 2).strength(0.1))
+        .alpha(.8) // restart simulation with full energy
         .restart();
 
     // update colors to race-based
