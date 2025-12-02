@@ -366,7 +366,10 @@ circles.on("mouseover", (event, d) =>
         tooltip.style("visibility", "visible")
             // AI: asked how to include multiple lines of text on tooltip
             .text("Song Title: " + d.row.Song + "\n"
-                + "Artist: " + d.row.Artist
+                + "Genre: " + d.row["Discogs Genre"] + "\n"
+                + "Artist(s): " + d.row.Artist + "\n"
+                + "Songwriter(s): " + d.row.Songwriters + "\n"
+                + "Date: " + d.row.Date  + "\n"
             );
         })
     .on("mousemove", (event) =>  {
