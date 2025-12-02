@@ -46,7 +46,7 @@ const svgWidth = 1200,
 
 // define current state variables
 let currentRole = "Songwriter(s)";
-let currentGroup = "none";
+let currentGroup = "Reset";
 
 // grab roles & update session states with selection
 // role drop-down (artist v songwriter)
@@ -103,7 +103,7 @@ function reheatManyTimes(N, cool_time) {
 }
 
 
-// default circle setting ("none")
+// default circle setting ("Reset")
 function defaultCircles() {
     simulation
         .force("x", d3.forceX(width / 2).strength(0.07))
@@ -192,8 +192,8 @@ function renderLegend() {
   // AI: asked how to reset legend element
   legendContainer.innerHTML = "";
 
-  // create legend for "none"
-  if (currentGroup === "none") {
+  // create legend for "Reset"
+  if (currentGroup === "Reset") {
     createSingleLegend("All Songs", "#B0B0B0");
     
     return;  
@@ -318,7 +318,7 @@ function updateLayout() {
     // console.log("updateLayout called with:", { currentRole, currentGroup });
 
     // default layout
-    if (currentGroup === "none") {
+    if (currentGroup === "Reset") {
         defaultCircles();
         updateLegendSmooth();
     }
@@ -365,11 +365,11 @@ circles.on("mouseover", (event, d) =>
         {
         tooltip.style("visibility", "visible")
             // AI: asked how to include multiple lines of text on tooltip
-            .text("Song Title: " + d.row.Song + "\n"
-                + "Genre: " + d.row["Discogs Genre"] + "\n"
-                + "Artist(s): " + d.row.Artist + "\n"
-                + "Songwriter(s): " + d.row.Songwriters + "\n"
-                + "Date: " + d.row.Date  + "\n"
+            .html("Song Title: " + d.row.Song + "<br>"
+                + "Genre: " + d.row["Discogs Genre"] +  "<br>"
+                + "Artist(s): " + d.row.Artist +  "<br>"
+                + "Songwriter(s): " + d.row.Songwriters +  "<br>"
+                + "Date: " + d.row.Date  +  "<br>"
             );
         })
     .on("mousemove", (event) =>  {
