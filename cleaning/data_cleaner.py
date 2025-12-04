@@ -43,6 +43,10 @@ songs_df.dropna(subset=["Songwriter_Gender"], inplace=True)
 songs_df.dropna(subset=["Artist_Race"], inplace=True)
 songs_df.dropna(subset=["Songwriter_Race"], inplace=True)
 songs_df.dropna(subset=["Happiness"], inplace=True)
+songs_df.dropna(subset=["Danceability"], inplace=True)
+
+# create year column
+
 
 # save as new csv
 songs_df.to_csv(f"{ROOT}/www/data/Billboard100_cleaned.csv", index=False)

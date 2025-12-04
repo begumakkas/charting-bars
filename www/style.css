@@ -132,16 +132,16 @@ h4, p {
     margin-left: 9rem;
 }
 
-.happiness-axis {
+.happiness-axis, .dance-axis {
     opacity: 0;
     transition: opacity 0.4s ease;
 }
 
-.happiness-axis.visible {
+.happiness-axis.visible, .dance-axis.visible {
     opacity: 1;
 }
 
-.happiness-label {
+.happiness-label, .dance-label {
   font-size: 0.85rem;
   fill: #F0F0F0;
 }

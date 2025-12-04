@@ -32,9 +32,9 @@ const nodes = data.map((d, i) => ({
     artistRace: d.Artist_Race,
     songwriterRace: d.Songwriter_Race,
     happiness: d.Happiness,
+    danceability: d.Danceability,
     radius: 5
 }));
-console.log(nodes)
 
 
 // set up margins and dimensions
@@ -46,7 +46,7 @@ const svgWidth = 1200,
 
 // define current state variables
 let currentRole = "Songwriter(s)";
-let currentGroup = "Reset";
+let currentGroup = "gender";
 
 // grab roles & update session states with selection
 // role drop-down (artist v songwriter)
@@ -55,6 +55,8 @@ roleSelect.addEventListener("change", e => {
     currentRole = e.target.value;
     console.log("current Role:", currentRole);
 
+
+    updateLayout();
 })
 
 // buttons
@@ -155,16 +157,16 @@ function clusterByCategory(fieldName, xScale, colorScale) {
         .attr("fill", d => colorScale(d[fieldName]));
 }
 
-function clusterByHappiness() {
+function clusterByOtherView(fieldName, xScale) {
     simulation 
-        .force("x", d3.forceX(d => xHappiness(d.happiness)).strength(0.03))
+        .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.03))
         .force("y", d3.forceY(height / 2).strength(0.05));
 
     reheatManyTimes(3, 300); // simulate N button clicks, 300ms apart
 
     // update circle colors 
-    circles
-        .attr("fill", "#971b5fff");
+    // circles
+    //     .attr("fill", "#971b5fff");
 }
 
 // legend function
@@ -285,6 +287,7 @@ simulation.on("tick", () => {
 });
 
 // create x-axis for other views
+// Happiness
 const xAxisHappiness = g.append("g")
     .attr("class", "happiness-axis")
     .attr("transform", `translate(0,${height + 20})`)
@@ -309,7 +312,35 @@ xAxisHappiness.append("text")
   .attr("x", xHappiness(100))
   .attr("y", 25)
   .attr("text-anchor", "end")
-  .text("More Happy");        
+  .text("More Happy");     
+  
+
+// Danceability
+const xAxisDance = g.append("g")
+    .attr("class", "dance-axis")
+    .attr("transform", `translate(0,${height + 20})`)
+    .call(
+        d3.axisBottom(xHappiness) // can use xHappiness because scales are identical (0-100)
+        .tickValues([])
+        .tickSize(0)
+    );
+
+// create manual labels for happiness x-axis
+// left label
+xAxisDance.append("text")
+  .attr("class", "dance-label")
+  .attr("x", xHappiness(0))
+  .attr("y", 25)              
+  .attr("text-anchor", "start")
+  .text("Less Danceable");        
+
+// right label
+xAxisDance.append("text")
+  .attr("class", "dance-label")
+  .attr("x",  xHappiness(100))
+  .attr("y", 25)
+  .attr("text-anchor", "end")
+  .text("More Danceable");   
 
 
 
@@ -349,11 +380,20 @@ function updateLayout() {
 
     // happiness
     if (currentGroup === "happiness") {
-        clusterByHappiness();
-        updateLegendSmooth(); 
+        clusterByOtherView("happiness", xHappiness);
+        // updateLegendSmooth(); 
         xAxisHappiness.classed("visible", true); // display x-axis only for this group
     } else {
         xAxisHappiness.classed("visible", false)
+    };
+
+    // danceability
+    if (currentGroup === "danceability") {
+        clusterByOtherView("danceability", xHappiness); // can use xHappiness because scales are identical (0-100)
+        // updateLegendSmooth(); 
+        xAxisDance.classed("visible", true); // display x-axis only for this group
+    } else {
+        xAxisDance.classed("visible", false)
     };
 }
 
@@ -369,7 +409,7 @@ circles.on("mouseover", (event, d) =>
                 + "Genre: " + d.row["Discogs Genre"] +  "<br>"
                 + "Artist(s): " + d.row.Artist +  "<br>"
                 + "Songwriter(s): " + d.row.Songwriters +  "<br>"
-                + "Date: " + d.row.Date  +  "<br>"
+                + "Release Date: " + d.row.Date  +  "<br>"
             );
         })
     .on("mousemove", (event) =>  {
@@ -381,4 +421,4 @@ circles.on("mouseover", (event, d) =>
     })
 
 // display legend on initial load of page
-renderLegend();
+updateLayout();
