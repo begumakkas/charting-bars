@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // load & clean data
-const data = await d3.csv("../data/Billboard100_cleaned.csv", d3.autoType);
+const data = await d3.csv("data/Billboard100_cleaned.csv", d3.autoType);
 
 // set up force simulation
 const nodes = data.map((d, i) => ({
@@ -33,12 +33,13 @@ const nodes = data.map((d, i) => ({
     songwriterRace: d.Songwriter_Race,
     happiness: d.Happiness,
     danceability: d.Danceability,
+    year: d.Year,
     radius: 5
 }));
 
 
 // set up margins and dimensions
-const svgWidth = 1200,
+const svgWidth = 1300,
     svgHeight = 600,
     margin = { top: 50, right: 50, bottom: 50, left: 50},
     width = svgWidth - margin.left - margin.right,
@@ -54,7 +55,6 @@ const roleSelect = document.getElementById("role-select");
 roleSelect.addEventListener("change", e => {
     currentRole = e.target.value;
     console.log("current Role:", currentRole);
-
 
     updateLayout();
 })
@@ -142,6 +142,10 @@ const xHappiness = d3.scaleLinear()
     .domain([0, 100])
     .range([0,width]);
 
+const xYear = d3.scaleLinear()
+    .domain(d3.extent(data, d => d.Year))
+    .range([0,width]);
+
 
 // function that updates simulation based on groups
 function clusterByCategory(fieldName, xScale, colorScale) {
@@ -167,6 +171,15 @@ function clusterByOtherView(fieldName, xScale) {
     // update circle colors 
     // circles
     //     .attr("fill", "#971b5fff");
+}
+
+function clusterByYear() {
+    simulation 
+        .force("x", d3.forceX(d => xYear(d.year)).strength(0.1))
+        .force("y", d3.forceY(height / 2).strength(0.04));
+
+    reheatManyTimes(3, 500); 
+
 }
 
 // legend function
@@ -287,6 +300,7 @@ simulation.on("tick", () => {
 });
 
 // create x-axis for other views
+
 // Happiness
 const xAxisHappiness = g.append("g")
     .attr("class", "happiness-axis")
@@ -343,6 +357,18 @@ xAxisDance.append("text")
   .text("More Danceable");   
 
 
+// Year
+const xAxisYear = g.append("g")
+    .attr("class", "year-axis")
+    .attr("transform", `translate(0,${height + 20})`)
+    .call(
+        d3.axisBottom(xYear) 
+        .ticks(10)
+        .tickFormat(d3.format("d"))
+    );
+
+
+
 
 // function that moves circles / updates layout
 function updateLayout() {
@@ -390,10 +416,17 @@ function updateLayout() {
     // danceability
     if (currentGroup === "danceability") {
         clusterByOtherView("danceability", xHappiness); // can use xHappiness because scales are identical (0-100)
-        // updateLegendSmooth(); 
-        xAxisDance.classed("visible", true); // display x-axis only for this group
+        xAxisDance.classed("visible", true); 
     } else {
         xAxisDance.classed("visible", false)
+    };
+
+    // time
+    if (currentGroup === "time") {
+        clusterByYear(); 
+        xAxisYear.classed("visible", true); 
+    } else {
+        xAxisYear.classed("visible", false)
     };
 }
 

@@ -132,12 +132,12 @@ h4, p {
     margin-left: 9rem;
 }
 
-.happiness-axis, .dance-axis {
+.happiness-axis, .dance-axis, .year-axis {
     opacity: 0;
     transition: opacity 0.4s ease;
 }
 
-.happiness-axis.visible, .dance-axis.visible {
+.happiness-axis.visible, .dance-axis.visible, .year-axis.visible {
     opacity: 1;
 }
 

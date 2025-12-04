@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).parent.parent.resolve()
@@ -46,7 +47,8 @@ songs_df.dropna(subset=["Happiness"], inplace=True)
 songs_df.dropna(subset=["Danceability"], inplace=True)
 
 # create year column
-
+year2_int = raw_df["Date"].str[-2:].astype(int)
+raw_df["Year"] = np.where(year2_int > 25, 1900 + year2_int, 2000 + year2_int)
 
 # save as new csv
 songs_df.to_csv(f"{ROOT}/www/data/Billboard100_cleaned.csv", index=False)
