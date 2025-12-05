@@ -297,7 +297,81 @@ function updateLegendSmooth() {
     }, 800); // 0.8 second
 }
 
-// create svg
+
+// create svg to visualize race/gender percentages
+// load summarized data
+const summaryData = await d3.csv("data/Billboard100_summary.csv", d3.autoType);
+
+// set svg size & margins
+const barMargin = { top: 10, right: 20, bottom: 20, left: 10 };
+const barWidth  = 220;
+const barHeight = 80; 
+
+let barChart = d3.select("#summary-svg")
+    .append("svg")
+    .attr("width", barWidth + barMargin.left + barMargin.right);
+
+
+function createBarChart(filteredSummary, colorScale) {
+    const rowHeight = 18;
+    const height = filteredSummary.length * rowHeight;
+
+    barChart.attr("height", height + barMargin.top + barMargin.bottom);
+
+    const g = barChart
+        .selectAll("g.chart-root")
+        .data([null])
+        .join("g")
+        .attr("class", "chart-root")
+        .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
+
+    // x = percent 0–100
+    const x = d3.scaleLinear()
+        .domain([0, 100])
+        .range([0, barWidth]);
+
+    // y = category (just for vertical spacing)
+    const y = d3.scaleBand()
+        .domain(filteredSummary.map(d => d.category))
+        .range([0, height])
+        .padding(0.2);
+
+    // JOIN bars
+    const bars = g.selectAll("rect")
+        .data(filteredSummary, d => d.category)
+        .join("rect")
+        .attr("x", 0)
+        .attr("y", d => y(d.category))
+        .attr("width", d => x(d.percent))
+        .attr("height", y.bandwidth()) // creates equal sized heights based on svg size
+        .attr("fill", d => colorScale(d.category));
+}
+
+// create wrapper function that filters data and calls function to draw bar chart
+function updateSummary() {
+    // filter summary data
+    const roleKey = (currentRole === "Artist(s)" ? "Artist" : "Songwriter");
+
+    const filteredData = summaryData.filter(d =>
+        d.group === currentColorGroup && d.role === roleKey
+    );
+    // console.log("show filter data:", filteredData);
+    // console.log("currentGroup", currentColorGroup);
+    // console.log("currentRole", currentRole);
+
+    // draw bar chart and pick gender/race color scale
+    if (currentColorGroup !== "gender" && currentColorGroup !== "race") {
+        return; // nothing to show for "Reset" group
+    }
+
+    const colorScale = currentColorGroup === "gender" ? genderColor : raceColor;
+    createBarChart(filteredData, colorScale);
+    
+}
+
+
+
+// create circle svgs
 
 // create empty svg
 let CircleSvg = d3.select("#circles")
@@ -471,6 +545,10 @@ function updateLayout() {
 
     // update circle colors
     colorByCurrentState();
+
+    // update summary chart
+    updateSummary();
+
 }
 
 

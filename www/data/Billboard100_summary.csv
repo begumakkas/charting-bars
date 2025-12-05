@@ -1,0 +1,15 @@
+group,role,category,count,percent
+gender,Artist,All Female,284,24.21142369991475
+gender,Artist,All Male,717,61.125319693094625
+gender,Artist,At Least One Non-Binary,5,0.4262574595055414
+gender,Artist,Female-Male Mixed,167,14.23699914748508
+gender,Songwriter,All Female,35,2.9838022165387894
+gender,Songwriter,All Male,852,72.63427109974424
+gender,Songwriter,At Least One Non-Binary,7,0.5967604433077579
+gender,Songwriter,Female-Male Mixed,279,23.785166240409207
+race,Artist,Mixed,103,8.780903665814153
+race,Artist,Non-White,435,37.084398976982094
+race,Artist,White,635,54.134697357203756
+race,Songwriter,Mixed,240,20.460358056265985
+race,Songwriter,Non-White,275,23.444160272804773
+race,Songwriter,White,658,56.09548167092924

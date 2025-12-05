@@ -73,66 +73,74 @@
 
         <div id="tooltip"></div>
 
-        <!-- data dictionary -->
-        <div class="data-dictionary">
-            <h3>Data Dictionary</h3>
+        
+        <div id="dict-and-stats">
+            <!-- data dictionary -->
+            <div class="data-dictionary">
+                <h3>Data Dictionary</h3>
 
-            <details class="dict-item">
-                <summary>Artist(s)</summary>
-                <p>Artist Name</p>
-            </details>
+                <details class="dict-item">
+                    <summary>Artist(s)</summary>
+                    <p>Artist Name</p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Songwriter(s)</summary>
-                <p>Songwriters from BMI/ASCAP Songview database. If they do not 
-                    have the information, it comes from The Billboard Book of 
-                    Number One Hits by Fred Bronson. If Bronson does not have 
-                    the information, it comes from Spotify song credits.</p>
-            </details>
+                <details class="dict-item">
+                    <summary>Songwriter(s)</summary>
+                    <p>Songwriters from BMI/ASCAP Songview database. If they do not 
+                        have the information, it comes from The Billboard Book of 
+                        Number One Hits by Fred Bronson. If Bronson does not have 
+                        the information, it comes from Spotify song credits.</p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Race</summary>
-                <p>Determines if artist/songwriter is white or non-white. "Mixed" 
-                    refers to artists/songwriters with more than one person, where
-                    the group had a white and non-white member.</p>
-            </details>
+                <details class="dict-item">
+                    <summary>Race</summary>
+                    <p>Determines if artist/songwriter is white or non-white. "Mixed" 
+                        refers to artists/songwriters with more than one person, where
+                        the group had a white and non-white member.</p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Gender</summary>
-                <p>Determines gender identity of artist/songwriter. "All Male" and 
-                    "All Female" refers to gender of entire individual or group. 
-                    "Female-Male Mixed" means group had both males and females. 
-                    "At Least One Non-Binary" refers to including at least one 
-                    non-binary person. 
-                </p>
-            </details>
+                <details class="dict-item">
+                    <summary>Gender</summary>
+                    <p>Determines gender identity of artist/songwriter. "All Male" and 
+                        "All Female" refers to gender of entire individual or group. 
+                        "Female-Male Mixed" means group had both males and females. 
+                        "At Least One Non-Binary" refers to including at least one 
+                        non-binary person. 
+                    </p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Happiness</summary>
-                <p>Happiness measure from 0 to 100 provided by Spotify. Spotify 
-                    quantifies "happiness" using a valence score, which is calculated
-                    by analyzing various audio features such as tempo, key, and energy.
-                    A model is trained with songs that exhibit these features that 
-                    calculates a happiness score. 
-                </p>
-            </details>
+                <details class="dict-item">
+                    <summary>Happiness</summary>
+                    <p>Happiness measure from 0 to 100 provided by Spotify. Spotify 
+                        quantifies "happiness" using a valence score, which is calculated
+                        by analyzing various audio features such as tempo, key, and energy.
+                        A model is trained with songs that exhibit these features that 
+                        calculates a happiness score. 
+                    </p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Danceability</summary>
-                <p>Danceability measure from 0 to 100 provided by Spotify. 
-                    Very similar to how happiness is calculated, Spotify uses
-                    machine learning to analyze acoustic features of a song such
-                    as tempo, beat strength, and rhythm stability.
-                </p>
-            </details>
+                <details class="dict-item">
+                    <summary>Danceability</summary>
+                    <p>Danceability measure from 0 to 100 provided by Spotify. 
+                        Very similar to how happiness is calculated, Spotify uses
+                        machine learning to analyze acoustic features of a song such
+                        as tempo, beat strength, and rhythm stability.
+                    </p>
+                </details>
 
-            <details class="dict-item">
-                <summary>Time</summary>
-                <p>Date included is the first week the song hit number one in the
-                    Billboard 100 list. 
-                </p>
-            </details>
-
+                <details class="dict-item">
+                    <summary>Time</summary>
+                    <p>Date included is the first week the song hit number one in the
+                        Billboard Hot 100 list. 
+                    </p>
+                </details>
+            </div>
+            
+            <!-- Percentages Summary -->
+            <div class="summary-panel">
+                <h3>Summary</h3>
+                <div id="summary-svg"></div>
+            </div>
 
         </div>
 

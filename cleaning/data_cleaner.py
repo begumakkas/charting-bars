@@ -52,3 +52,46 @@ raw_df["Year"] = np.where(year2_int > 25, 1900 + year2_int, 2000 + year2_int)
 
 # save as new csv
 songs_df.to_csv(f"{ROOT}/www/data/Billboard100_cleaned.csv", index=False)
+
+
+############# Create Summary Table #############
+
+
+def createRoleSummary(df, col: str, role: str, group: str):
+    df_new = (
+        df[[col]]
+        .assign(group=group)
+        .rename(columns={col: "category"})
+        .assign(role=role)
+    )
+
+    return df_new
+
+
+# convert data to long format
+artist_race = createRoleSummary(songs_df, "Artist_Race", "Artist", "race")
+artist_gender = createRoleSummary(songs_df, "Artist_Gender", "Artist", "gender")
+songwriter_race = createRoleSummary(songs_df, "Songwriter_Race", "Songwriter", "race")
+songwriter_gender = createRoleSummary(
+    songs_df, "Songwriter_Gender", "Songwriter", "gender"
+)
+
+# stack all tables
+combined_df = pd.concat(
+    [artist_race, artist_gender, songwriter_race, songwriter_gender], ignore_index=True
+)
+
+summary = (
+    combined_df.groupby(["group", "role", "category"])
+    .size()  # counts
+    .reset_index(name="count")
+)
+
+summary["percent"] = (
+    summary["count"]
+    / summary.groupby(["group", "role"])["count"].transform("sum")
+    * 100
+)
+
+# save as new csv
+summary.to_csv(f"{ROOT}/www/data/Billboard100_summary.csv", index=False)
