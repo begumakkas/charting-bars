@@ -48,6 +48,8 @@ const svgWidth = 1300,
 // define current state variables
 let currentRole = "Songwriter(s)";
 let currentGroup = "gender";
+// include currentColorGroup so that colors change with "other views"
+let currentColorGroup = "gender";
 
 // grab roles & update session states with selection
 // role drop-down (artist v songwriter)
@@ -68,6 +70,12 @@ buttons.forEach(btn => {
         currentGroup = e.target.dataset.group;
         console.log("currentGroup:", currentGroup);
 
+        // update if current button is race or gender
+        if (currentGroup === "race" || currentGroup === "gender" 
+            || currentGroup === "Reset") {
+            currentColorGroup = currentGroup;
+        }
+
         updateLayout();
     });
 });
@@ -87,20 +95,20 @@ const simulation = d3.forceSimulation(nodes)
 // really need is the simulation to cool down before running it multiple times to
 // ensure the circles are fully separated by their categories. 
 
-function oneReheat(reheatCount, N, cool_time) {
+function oneReheat(reheatCount, N, cool_time, alphaVal) {
     if (reheatCount >= N) return;
 
-    simulation.alpha(1).restart();
+    simulation.alpha(alphaVal).restart();
 
     const nextCount = reheatCount + 1;
 
     if (nextCount < N) {
-        setTimeout(() => oneReheat(nextCount, N, cool_time), cool_time);
+        setTimeout(() => oneReheat(nextCount, N, cool_time, alphaVal), cool_time);
     }
 }
 
-function reheatManyTimes(N, cool_time) {
-    oneReheat(0, N, cool_time); // start with reheatCount = 0
+function reheatManyTimes(N, cool_time, alphaVal) {
+    oneReheat(0, N, cool_time, alphaVal); // start with reheatCount = 0
 
 }
 
@@ -114,8 +122,8 @@ function defaultCircles() {
         .restart();
 
     // update colors to race-based
-    circles
-        .attr("fill", "#B0B0B0");
+    // circles
+    //     .attr("fill", "#B0B0B0");
 }
 
 // create x-center and color mappings for group categories
@@ -154,11 +162,11 @@ function clusterByCategory(fieldName, xScale, colorScale) {
         .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.05)) 
         .force("y", d3.forceY(height / 2).strength(0.05)); 
 
-    reheatManyTimes(5, 300); // simulate N button clicks, 300ms apart
+    reheatManyTimes(5, 300, 1); // simulate N button clicks, 300ms apart
 
     // update circle colors 
-    circles
-        .attr("fill", d => colorScale(d[fieldName]));
+    // circles
+    //     .attr("fill", d => colorScale(d[fieldName]));
 }
 
 function clusterByOtherView(fieldName, xScale) {
@@ -166,20 +174,48 @@ function clusterByOtherView(fieldName, xScale) {
         .force("x", d3.forceX(d => xScale(d[fieldName])).strength(0.03))
         .force("y", d3.forceY(height / 2).strength(0.05));
 
-    reheatManyTimes(3, 300); // simulate N button clicks, 300ms apart
-
-    // update circle colors 
-    // circles
-    //     .attr("fill", "#971b5fff");
+    reheatManyTimes(3, 300, 1); // simulate N button clicks, 300ms apart
 }
 
 function clusterByYear() {
     simulation 
-        .force("x", d3.forceX(d => xYear(d.year)).strength(0.1))
+        .force("x", d3.forceX(d => xYear(d.year)).strength(0.2))
         .force("y", d3.forceY(height / 2).strength(0.04));
 
-    reheatManyTimes(3, 500); 
+    reheatManyTimes(4, 300, 0.2); 
 
+}
+
+// create function that colors circles based on current state
+function colorByCurrentState() {
+    // Reset view: all grey
+    if (currentGroup === "Reset") {
+        circles.attr("fill", "#B0B0B0");
+        return;
+    }
+
+    // Race views
+    if (currentColorGroup === "race") {
+        const field =
+            currentRole === "Artist(s)" // if currentRole is Artist, 
+            // set field to "artistRace" else "songwriterRace"
+                ? "artistRace"
+                : "songwriterRace";
+
+        circles.attr("fill", d => raceColor(d[field]));
+        return;
+    }
+
+    // Gender views
+    if (currentColorGroup === "gender") {
+        const field =
+            currentRole === "Artist(s)"
+                ? "artistGender"
+                : "songwriterGender";
+
+        circles.attr("fill", d => genderColor(d[field]));
+        return;
+    }
 }
 
 // legend function
@@ -382,25 +418,29 @@ function updateLayout() {
 
     // artist & race
     if (currentRole === "Artist(s)" && currentGroup === "race") {
-        clusterByCategory("artistRace", xCenterRace, raceColor);
+        // clusterByCategory("artistRace", xCenterRace, raceColor);
+        clusterByCategory("artistRace", xCenterRace);
         updateLegendSmooth();
     }
 
     // artist & gender
     if (currentRole === "Artist(s)" && currentGroup === "gender") {
-        clusterByCategory("artistGender", xCenterGender, genderColor);
+        // clusterByCategory("artistGender", xCenterGender, genderColor);
+        clusterByCategory("artistGender", xCenterGender);
         updateLegendSmooth();
     }
 
     // songwriter & race
     if (currentRole === "Songwriter(s)" && currentGroup === "race") {
-        clusterByCategory("songwriterRace", xCenterRace, raceColor);
+        // clusterByCategory("songwriterRace", xCenterRace, raceColor);
+        clusterByCategory("songwriterRace", xCenterRace);
         updateLegendSmooth();
     }
 
     // songwriter & gender
     if (currentRole === "Songwriter(s)" && currentGroup === "gender") {
-        clusterByCategory("songwriterGender", xCenterGender, genderColor);
+        // clusterByCategory("songwriterGender", xCenterGender, genderColor);
+        clusterByCategory("songwriterGender", xCenterGender);
         updateLegendSmooth();
     }
 
@@ -428,6 +468,9 @@ function updateLayout() {
     } else {
         xAxisYear.classed("visible", false)
     };
+
+    // update circle colors
+    colorByCurrentState();
 }
 
 
@@ -442,7 +485,7 @@ circles.on("mouseover", (event, d) =>
                 + "Genre: " + d.row["Discogs Genre"] +  "<br>"
                 + "Artist(s): " + d.row.Artist +  "<br>"
                 + "Songwriter(s): " + d.row.Songwriters +  "<br>"
-                + "Release Date: " + d.row.Date  +  "<br>"
+                + "Date Song Hit #1: " + d.row.Date  +  "<br>"
             );
         })
     .on("mousemove", (event) =>  {
