@@ -200,3 +200,17 @@ h3 {
     font-size: 12px;
     font-style: italic;
 }
+
+.bar-chart {
+    margin-bottom: 3rem;
+}
+
+/* Unvisited link */
+a:link {
+      color: pink;
+    }
+
+/* Visited link */
+a:visited {
+    color: pink;
+}
