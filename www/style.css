@@ -195,3 +195,8 @@ h3 {
 .chart-root.fade {
     opacity: 0;
 }
+
+.sources p {
+    font-size: 12px;
+    font-style: italic;
+}
