@@ -121,7 +121,7 @@ h4, p {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .filter-card {
@@ -132,18 +132,20 @@ h4, p {
     margin-left: 9rem;
 }
 
-.happiness-axis, .dance-axis, .year-axis {
+.happiness-axis, .dance-axis, .year-axis, .x-axis {
     opacity: 0;
     transition: opacity 0.4s ease;
+    font-size: 14px;
 }
 
-.happiness-axis.visible, .dance-axis.visible, .year-axis.visible {
+.happiness-axis.visible, .dance-axis.visible, .year-axis.visible, .x-axis {
     opacity: 1;
 }
 
 .happiness-label, .dance-label {
   font-size: 0.85rem;
   fill: #F0F0F0;
+  font-size: 14px;
 }
 
 #dict-and-stats {
@@ -183,4 +185,13 @@ h3 {
   cursor: pointer;
   font-weight: 600;
   color: rgb(194, 110, 156);
+}
+
+.chart-root {
+    opacity: 1;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.chart-root.fade {
+    opacity: 0;
 }

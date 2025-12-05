@@ -40,7 +40,7 @@ const nodes = data.map((d, i) => ({
 
 // set up margins and dimensions
 const svgWidth = 1300,
-    svgHeight = 600,
+    svgHeight = 500,
     margin = { top: 50, right: 50, bottom: 50, left: 50},
     width = svgWidth - margin.left - margin.right,
     height = svgHeight - margin.top - margin.bottom;
@@ -303,9 +303,9 @@ function updateLegendSmooth() {
 const summaryData = await d3.csv("data/Billboard100_summary.csv", d3.autoType);
 
 // set svg size & margins
-const barMargin = { top: 10, right: 20, bottom: 20, left: 10 };
-const barWidth  = 220;
-const barHeight = 80; 
+const barMargin = { top: 10, right: 20, bottom: 50, left: 10 };
+const barWidth  = 480;
+const barHeight = 50; 
 
 let barChart = d3.select("#summary-svg")
     .append("svg")
@@ -313,8 +313,7 @@ let barChart = d3.select("#summary-svg")
 
 
 function createBarChart(filteredSummary, colorScale) {
-    const rowHeight = 18;
-    const height = filteredSummary.length * rowHeight;
+    const height = filteredSummary.length * barHeight;
 
     barChart.attr("height", height + barMargin.top + barMargin.bottom);
 
@@ -322,7 +321,7 @@ function createBarChart(filteredSummary, colorScale) {
         .selectAll("g.chart-root")
         .data([null])
         .join("g")
-        .attr("class", "chart-root")
+        .classed("chart-root", true)
         .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
 
     // x = percent 0–100
@@ -337,7 +336,7 @@ function createBarChart(filteredSummary, colorScale) {
         .padding(0.2);
 
     // JOIN bars
-    const bars = g.selectAll("rect")
+    g.selectAll("rect")
         .data(filteredSummary, d => d.category)
         .join("rect")
         .attr("x", 0)
@@ -345,6 +344,43 @@ function createBarChart(filteredSummary, colorScale) {
         .attr("width", d => x(d.percent))
         .attr("height", y.bandwidth()) // creates equal sized heights based on svg size
         .attr("fill", d => colorScale(d.category));
+
+    // add x-axis
+    g.selectAll("g.x-axis")
+        .data([null])
+        .join("g") // child "g" element
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(
+            d3.axisBottom(x)
+            .ticks(5)         
+            .tickFormat(d => d + "%")       
+        );
+
+    // x-axis label
+    g.selectAll("text.x-axis-label")
+        .data([null])
+        .join("text")
+        .attr("class", "x-axis-label")
+        .attr("x", barWidth / 2)
+        .attr("y", height + 45)
+        .attr("fill", "white")
+        .attr("text-anchor", "middle")
+        .text("Percentage of Total Songs")
+
+
+    // add percentage labels
+    g.selectAll(".bar-label")
+        .data(filteredSummary, d => d.category)
+        .join("text")
+        .attr("class", "bar-label")
+        .attr("x", d => x(d.percent) + 5)
+        .attr("y", d => y(d.category) + y.bandwidth() / 2)
+        .attr("text-anchor", "start")
+        .attr("dominant-baseline", "middle")
+        .style("fill", "white")
+        .text(d => d3.format(".1f")((d.percent)) + "%"); // round % label
+    
 }
 
 // create wrapper function that filters data and calls function to draw bar chart
@@ -355,20 +391,27 @@ function updateSummary() {
     const filteredData = summaryData.filter(d =>
         d.group === currentColorGroup && d.role === roleKey
     );
-    // console.log("show filter data:", filteredData);
-    // console.log("currentGroup", currentColorGroup);
-    // console.log("currentRole", currentRole);
 
     // draw bar chart and pick gender/race color scale
-    if (currentColorGroup !== "gender" && currentColorGroup !== "race") {
-        return; // nothing to show for "Reset" group
-    }
+    // if (currentColorGroup !== "gender" && currentColorGroup !== "race") {
+    //     return; // nothing to show for "Reset" group
+    // }
 
     const colorScale = currentColorGroup === "gender" ? genderColor : raceColor;
     createBarChart(filteredData, colorScale);
     
 }
 
+// wrap summary with fade in/out function
+function updateSummarySmooth() {
+    const root = barChart.select("g.chart-root");
+    root.classed("fade", true); 
+
+    setTimeout(() => {
+        updateSummary();                        
+        root.classed("fade", false); 
+    }, 800);
+}
 
 
 // create circle svgs
@@ -547,7 +590,7 @@ function updateLayout() {
     colorByCurrentState();
 
     // update summary chart
-    updateSummary();
+    updateSummarySmooth();
 
 }
 
