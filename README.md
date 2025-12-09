@@ -2,7 +2,7 @@
 
 **Author:** Begum Akkas
 
-An interactive D3.js visualization of every song that hit #1 on the Billboard Hot 100 between **August 4, 1958** and **January 11, 2025**. The project focuses on **who** is behind these hits (artists vs. songwriters) and how representation, mood, and time trends show up in the data.
+An interactive D3.js visualization of every song that hit #1 on the Billboard Hot 100 between **August 4, 1958** and **January 11, 2025**. The project focuses on **who** is behind these hits (artists vs. songwriters) and how representation, song mood (happiness, danceability), and time trends show up in the data.
 
 **Live site:** https://charting-bars.pages.dev/ 
 
