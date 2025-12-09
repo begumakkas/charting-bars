@@ -120,10 +120,6 @@ function defaultCircles() {
         .force("y", d3.forceY(height / 2).strength(0.1))
         .alpha(.8) // restart simulation with full energy
         .restart();
-
-    // update colors to race-based
-    // circles
-    //     .attr("fill", "#B0B0B0");
 }
 
 // create x-center and color mappings for group categories
@@ -163,10 +159,6 @@ function clusterByCategory(fieldName, xScale, colorScale) {
         .force("y", d3.forceY(height / 2).strength(0.05)); 
 
     reheatManyTimes(5, 300, 1); // simulate N button clicks, 300ms apart
-
-    // update circle colors 
-    // circles
-    //     .attr("fill", d => colorScale(d[fieldName]));
 }
 
 function clusterByOtherView(fieldName, xScale) {
@@ -393,10 +385,6 @@ function updateSummary() {
     );
 
     // draw bar chart and pick gender/race color scale
-    // if (currentColorGroup !== "gender" && currentColorGroup !== "race") {
-    //     return; // nothing to show for "Reset" group
-    // }
-
     const colorScale = currentColorGroup === "gender" ? genderColor : raceColor;
     createBarChart(filteredData, colorScale);
     
@@ -535,28 +523,24 @@ function updateLayout() {
 
     // artist & race
     if (currentRole === "Artist(s)" && currentGroup === "race") {
-        // clusterByCategory("artistRace", xCenterRace, raceColor);
         clusterByCategory("artistRace", xCenterRace);
         updateLegendSmooth();
     }
 
     // artist & gender
     if (currentRole === "Artist(s)" && currentGroup === "gender") {
-        // clusterByCategory("artistGender", xCenterGender, genderColor);
         clusterByCategory("artistGender", xCenterGender);
         updateLegendSmooth();
     }
 
     // songwriter & race
     if (currentRole === "Songwriter(s)" && currentGroup === "race") {
-        // clusterByCategory("songwriterRace", xCenterRace, raceColor);
         clusterByCategory("songwriterRace", xCenterRace);
         updateLegendSmooth();
     }
 
     // songwriter & gender
     if (currentRole === "Songwriter(s)" && currentGroup === "gender") {
-        // clusterByCategory("songwriterGender", xCenterGender, genderColor);
         clusterByCategory("songwriterGender", xCenterGender);
         updateLegendSmooth();
     }
@@ -564,7 +548,6 @@ function updateLayout() {
     // happiness
     if (currentGroup === "happiness") {
         clusterByOtherView("happiness", xHappiness);
-        // updateLegendSmooth(); 
         xAxisHappiness.classed("visible", true); // display x-axis only for this group
     } else {
         xAxisHappiness.classed("visible", false)
